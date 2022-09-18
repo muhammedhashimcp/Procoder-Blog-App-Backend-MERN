@@ -1,0 +1,36 @@
+{
+	"name": "backend",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"engines": {
+		"node": "v16.17.0"
+	},
+	"scripts": {
+		"start": "node server.js",
+		"server": "nodemon server.js"
+	},
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"@sendgrid/mail": "^7.7.0",
+		"bad-words": "^3.0.4",
+		"bcryptjs": "^2.4.3",
+		"cloudinary": "^1.30.1",
+		"cors": "^2.8.5",
+		"crypto": "^1.0.1",
+		"dotenv": "^16.0.1",
+		"express": "^4.18.1",
+		"express-async-handler": "^1.2.0",
+		"jsonwebtoken": "^8.5.1",
+		"mongoose": "^6.5.2",
+		"multer": "^1.4.5-lts.1",
+		"nodemailer": "^6.7.8",
+		"nodemailer-express-handlebars": "^5.0.0",
+		"nodemon": "^2.0.19",
+		"sharp": "^0.30.7"
+	},
+	"devDependencies": {
+		"morgan": "^1.10.0"
+	}
+}
