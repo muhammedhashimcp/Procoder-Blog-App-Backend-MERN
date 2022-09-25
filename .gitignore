@@ -2,3 +2,4 @@ backendZIP
 node_modules
 .env
 .sync.ffs_db
+sample.mongodb

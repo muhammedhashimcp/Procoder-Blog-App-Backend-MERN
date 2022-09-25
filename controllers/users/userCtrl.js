@@ -12,7 +12,6 @@ const nodemailer = require("nodemailer");
 require("dotenv").config();
 const hbs = require("nodemailer-express-handlebars");
 
-sgMail.setApiKey(process.env.SEND_GRID_API_KEY);
 
 /****
  * Register
@@ -29,6 +28,7 @@ const userRegisterCtrl = expressAsyncHandler(async (req, res) => {
 			email: req?.body?.email,
 			password: req?.body?.password,
 		});
+		res.json(user)
 	} catch (error) {
 		res.json({ error: error });
 	}

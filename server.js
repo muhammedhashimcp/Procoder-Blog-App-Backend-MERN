@@ -1,19 +1,18 @@
 const express = require("express");
-const dotenv = require('dotenv').config()
+const dotenv = require('dotenv').config()      
 // db import
 const dbConnect = require('./config/db/dbConnect')
 //Route imports
 const userRoutes = require("./route/users/usersRoute");
 const postRoutes = require("./route/posts/postRoute");
 const commentRoutes = require("./route/comments/commentRoute")
-const emailMsgRoutes = require("./route/emailMsg/emailMsgRoute")
+const emailMsgRoutes = require("./route/emailMsg/emailMsgRoute")   
 const categoryRoutes=require("./route/category/categoryRoute")
 
 //middleware  imports
 
 const cors=require('cors')
-const morgan = require('morgan')
-
+const morgan = require('morgan')   
 
 
 //custom middleware imports
