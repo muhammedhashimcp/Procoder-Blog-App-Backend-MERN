@@ -47,9 +47,12 @@ app.use('/api/category', categoryRoutes)
 //Error Handler
 app.use(notFound)
 app.use(errorHandler)
-
+     
 
 //server
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, console.log(`Server is Running at PORT ${PORT}`));
+
+app.listen(process.env.PORT || 5000, function () {
+	console.log(`Server is Running at PORT ${PORT}`);
+}); 
