@@ -49,8 +49,7 @@ app.use(notFound)
 app.use(errorHandler)
      
 
-//server
-const PORT = process.env.PORT || 5000;
+
 
 
 app.listen(process.env.PORT || 5000, function () {
