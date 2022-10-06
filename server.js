@@ -29,7 +29,9 @@ const { errorHandler, notFound } = require("./middlewares/error/errorHandler");
 
 //2.Middleware Usage
 
-
+app.get('/', (req, res) => {
+	res.send('API FOR PROCODER BLOG APP');
+});
 
 
 //router
