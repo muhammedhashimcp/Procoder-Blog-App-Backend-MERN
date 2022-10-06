@@ -11,7 +11,7 @@ const categoryRoutes=require("./route/category/categoryRoute")
 
 //middleware  imports
 const cors = require('cors');
-
+const morgan = require('morgan');   
 // combined /dev/tiny/ short/ common
 
 // middleware
@@ -20,17 +20,17 @@ app.use(express.json())
 app.use(cors())
 dbConnect();
 
-
+app.use(morgan('dev'))
 
 
 
 //custom middleware imports
 const { errorHandler, notFound } = require("./middlewares/error/errorHandler");
- 
+
 //2.Middleware Usage
 
 
-    
+
 
 //router
 app.use('/api/users', userRoutes)
@@ -47,11 +47,10 @@ app.use('/api/category', categoryRoutes)
 //Error Handler
 app.use(notFound)
 app.use(errorHandler)
-     
 
+  
+//server
+const PORT = process.env.PORT || 5000;  
 
-
-
-app.listen(process.env.PORT || 5000, function () {
-	console.log(`Server is Running at PORT ${PORT}`);
-}); 
+app.listen(PORT, console.log(`Server is Running at ----PORT ${PORT}`));
+ 
