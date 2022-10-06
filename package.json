@@ -7,8 +7,8 @@
 		"node": "v16.17.0"
 	},
 	"scripts": {
-		"start": "nodemon server.js"
-		
+		"start": "node server.js",
+		"server": "nodemon server.js"
 	},
 	"author": "",
 	"license": "ISC",
