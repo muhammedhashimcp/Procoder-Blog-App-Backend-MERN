@@ -11,7 +11,7 @@ const categoryRoutes=require("./route/category/categoryRoute")
 
 //middleware  imports
 const cors = require('cors');
-const morgan = require('morgan');   
+
 // combined /dev/tiny/ short/ common
 
 // middleware
@@ -20,7 +20,7 @@ app.use(express.json())
 app.use(cors())
 dbConnect();
 
-app.use(morgan('dev'))
+
 
 
 
