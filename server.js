@@ -26,11 +26,11 @@ dbConnect();
 
 //custom middleware imports
 const { errorHandler, notFound } = require("./middlewares/error/errorHandler");
-
+ 
 //2.Middleware Usage
 
 
-
+    
 
 //router
 app.use('/api/users', userRoutes)
