@@ -1,9 +1,9 @@
 const expressAsyncHandler = require("express-async-handler");
 const jwt = require("jsonwebtoken");
 const User = require("../../model/user/User");
-require("dotenv").config()
-
 const authMiddleware = expressAsyncHandler(async (req, res, next) => {
+
+	console.log(req.body);
 	let token;
 	if (req?.headers?.authorization?.startsWith("Bearer")) {
 		token = req.headers.authorization.split(" ")[1];

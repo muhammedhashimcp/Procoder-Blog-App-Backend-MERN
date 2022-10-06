@@ -12,6 +12,7 @@ const blockUser = require("../../utils/isBlock");
   └─────────────────────────────────────────────────────────────────────────┘
  */
 const createPostCtrl = expressAsyncHandler(async (req, res) => {
+
 	const { _id } = req.user;
 	// block user
 	blockUser(req.user);
@@ -25,21 +26,31 @@ const createPostCtrl = expressAsyncHandler(async (req, res) => {
 			isBlocked: true,
 		});
 		throw new Error(
-			"Creating Failed because it contains profane words and you have been blocked"
+			'Creating Failed because it contains profane words and you have been blocked'
 		);
 	}
 	//Prevent User if his account is starter account
-if(req?.user?.accountType == 'Starter Account' && req?.user?.postCount===2){
-throw new Error(' Starter Account only create two posts. Get more followers')
-}
-	// 1. Get the path to img
-	const localPath = `public/images/posts/${req.file.fileName}`;
+	if (
+		req?.user?.accountType == 'Starter Account' &&
+		req?.user?.postCount === 10
+	) {
+		throw new Error(
+			' Starter Account only create ten posts. Get more followers'
+		);
+	}
+	// 1. Get the path to blog icon image
+	const blogImgLocalPath = `public/images/posts/${req.files.blogIconImageFileName}`;
 	// 2.Upload to cloudinary
-	const imgUploaded = await cloudinaryUploadImg(localPath);
+	const blogImgUploaded = await cloudinaryUploadImg(blogImgLocalPath);
+	// 1. Get the path to banner image
+	const bannerImgLocalPath = `public/images/posts/${req.files.blogIconImageFileName}`;
+	// 2.Upload to cloudinary
+	const bannerImgUploaded = await cloudinaryUploadImg(bannerImgLocalPath);
 	try {
 		const post = await Post.create({
 			...req.body,
-			image: imgUploaded?.url,
+			blogImage: blogImgUploaded?.url,
+			blogBannerImage:bannerImgUploaded.url,
 			user: _id,
 		});
 		//update user post count
@@ -89,7 +100,7 @@ const fetchPostsCtrl = expressAsyncHandler(async (req, res) => {
 const fetchPostCtrl = expressAsyncHandler(async (req, res) => {
 	const { id } = req.params;
 	validateMongodbId(id);
-	try {
+	try { 
 		const post = await Post.findById(id)
 			.populate("user")
 			.populate("disLikes")

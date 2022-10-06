@@ -41,7 +41,7 @@ const fetchCategoriesCtrl = expressAsyncHandler(async (req, res) => {
 
 /*
   ┌─────────────────────────────────────────────────────────────────────────┐
-  │ Fetch category                                                          │
+  │ Fetch a category                                                         │
   └─────────────────────────────────────────────────────────────────────────┘
  */
 const fetchCategoryCtrl = expressAsyncHandler(async (req, res) => {

@@ -10,9 +10,18 @@ const emailMsgRoutes = require("./route/emailMsg/emailMsgRoute")
 const categoryRoutes=require("./route/category/categoryRoute")
 
 //middleware  imports
+const cors = require('cors');
+const morgan = require('morgan');   
+// combined /dev/tiny/ short/ common
 
-const cors=require('cors')
-const morgan = require('morgan')   
+// middleware
+const app = express();
+app.use(express.json())
+app.use(cors())
+dbConnect();
+
+app.use(morgan('dev'))
+
 
 
 //custom middleware imports
@@ -20,14 +29,7 @@ const { errorHandler, notFound } = require("./middlewares/error/errorHandler");
 
 //2.Middleware Usage
 
-// middleware
-const app = express();
-app.use(cors())
-dbConnect();
 
-// combined /dev/tiny/ short/ common
-app.use(morgan('dev'))
-app.use(express.json())
 
 
 //router

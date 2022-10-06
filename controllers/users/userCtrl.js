@@ -46,7 +46,7 @@ const userLoginCtrl = expressAsyncHandler(async (req, res) => {
 		throw new Error("Access Denied You have been blocked");
 	}
 	//Check if password is match
-	const isMatched = await userFound.isPasswordMatched(password);
+	const isMatched = await userFound?.isPasswordMatched(password);
 	if (userFound && isMatched) {
 		res.json({
 			_id: userFound?._id,
@@ -358,6 +358,22 @@ const accountVerificationCtrl = expressAsyncHandler(async (req, res) => {
 
 /*
   ┌─────────────────────────────────────────────────────────────────────────┐
+  │   remindMeLaterCtrl                                                     │
+  └─────────────────────────────────────────────────────────────────────────┘
+ */
+
+const remindMeLaterCtrl = expressAsyncHandler(async (req, res) => {
+console.log("🚀 ~ file: userCtrl.js ~ line 379 ~ remindMeLaterCtrl ~ remindMeLaterCtrl")
+		const loginUserId = req.user.id;
+		const userFound = await User.findById(loginUserId);
+	userFound.isAccountVerified = false;
+	userFound.remindMeLater = true;
+	await userFound.save();
+	res.json(userFound);
+});
+
+/*
+  ┌─────────────────────────────────────────────────────────────────────────┐
   │ Forget token generator                                                  │
   └─────────────────────────────────────────────────────────────────────────┘
  */
@@ -435,6 +451,32 @@ const profilePhotoUploadCtrl = expressAsyncHandler(async (req, res) => {
 	res.json(foundUser);
 });
 
+/*
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │ banner Photo upload                                                     │
+  └─────────────────────────────────────────────────────────────────────────┘
+ */
+const bannerPhotoUploadCtrl = expressAsyncHandler(async (req, res) => {
+	
+	// check user blocked or not
+	// 1. Get the path to img
+	const localPath = `public/images/banner/${req.file.fileName}`;
+	// 2.Upload to cloudinary
+	const imgUploaded = await cloudinaryUploadImg(localPath);
+	//3. Find the login user
+	const { _id } = req.user;
+	const foundUser = await User.findByIdAndUpdate(
+		_id,
+		{
+			profilePhoto: imgUploaded?.url,
+		},
+		{ new: true }
+	);
+	// Remove the saved profile photo from storage
+	fs.unlinkSync(localPath);
+	res.json(foundUser);
+});
+
 module.exports = {
 	userRegisterCtrl,
 	userLoginCtrl,
@@ -450,7 +492,10 @@ module.exports = {
 	unBlockUserCtrl,
 	generateVerificationTokenCtrl,
 	accountVerificationCtrl,
+	remindMeLaterCtrl,
 	forgetPasswordToken,
 	passwordResetCtrl,
 	profilePhotoUploadCtrl,
+	bannerPhotoUploadCtrl
 };
+ 
