@@ -53,7 +53,7 @@ const bannerImgResize = async (req, res, next) => {
 	}`;
 	// next()
 	await sharp(req.files.blogBannerImage[0].buffer) 
-		.resize(1000, 600)
+		.resize(1000,450)
 		.toFormat('jpeg')  
 		.jpeg({ quality: 100 })  
 		.toFile(

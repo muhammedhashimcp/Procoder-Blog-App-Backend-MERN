@@ -43,7 +43,7 @@ const createPostCtrl = expressAsyncHandler(async (req, res) => {
 	// 2.Upload to cloudinary
 	const blogImgUploaded = await cloudinaryUploadImg(blogImgLocalPath);
 	// 1. Get the path to banner image
-	const bannerImgLocalPath = `public/images/posts/${req.files.blogIconImageFileName}`;
+	const bannerImgLocalPath = `public/images/posts/${req.files.bannerImgFileName}`;
 	// 2.Upload to cloudinary
 	const bannerImgUploaded = await cloudinaryUploadImg(bannerImgLocalPath);
 	try {
