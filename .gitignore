@@ -5,3 +5,4 @@ node_modules
 /sample.mongodb
 sample.mongodb
 .sample.mongodb
+main.handlebars
