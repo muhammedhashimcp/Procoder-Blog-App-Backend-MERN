@@ -6,6 +6,7 @@ const User = require("../../model/user/User");
 const cloudinaryUploadImg = require("../../utils/cloudinary");
 const fs = require("fs");
 const blockUser = require("../../utils/isBlock");
+const SavedPost = require("../../model/savedPost/SavedPost");
 /*
   ┌─────────────────────────────────────────────────────────────────────────┐
   │ CREATE POST                                                             │
@@ -43,24 +44,26 @@ const createPostCtrl = expressAsyncHandler(async (req, res) => {
 	// 2.Upload to cloudinary
 	const blogImgUploaded = await cloudinaryUploadImg(blogImgLocalPath);
 	// 1. Get the path to banner image
-	const bannerImgLocalPath = `public/images/posts/${req.files.bannerImgFileName}`;
+	const bannerImgLocalPath = `public/images/banner/${req.files.bannerImgFileName}`;
+	console.log("🚀 ~ file: postCtrl.js ~ line 47 ~ createPostCtrl ~ bannerImgLocalPath", bannerImgLocalPath)
 	// 2.Upload to cloudinary
 	const bannerImgUploaded = await cloudinaryUploadImg(bannerImgLocalPath);
+	console.log("🚀 ~ file: postCtrl.js ~ line 50 ~ createPostCtrl ~ bannerImgUploaded", bannerImgUploaded)
 	try {
 		const post = await Post.create({
 			...req.body,
 			blogImage: blogImgUploaded?.url,
-			blogBannerImage:bannerImgUploaded.url,
+			blogBannerImage:bannerImgUploaded?.url,
 			user: _id,
 		});
 		//update user post count
 		await User.findByIdAndUpdate(
 			_id,
 			{ $inc: { postCount: 1 } },
-			{ new: true }
-		);
+			{ new: true } 
+		); 
 		// Remove the saved post images from storage
-		fs.unlinkSync(localPath);
+		fs.unlinkSync(localPath); 
 		res.json(post);
 	} catch (error) {
 		res.json(error);
@@ -219,7 +222,7 @@ const toggleAddLikeToPostCtrl = expressAsyncHandler(async (req, res) => {
   └─────────────────────────────────────────────────────────────────────────┘
  */
 
-const toggleAddDislikeToPostCtrl = expressAsyncHandler(async (req, res) => {
+const toggleAddDisLikeToPostCtrl = expressAsyncHandler(async (req, res) => {
 	//1.Find the post to be disLiked
 	const { postId } = req.body;
 	const post = await Post.findById(postId);
@@ -269,6 +272,176 @@ const toggleAddDislikeToPostCtrl = expressAsyncHandler(async (req, res) => {
 	}
 });
 
+
+// save
+
+
+/*
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │   save                                                                  │
+  └─────────────────────────────────────────────────────────────────────────┘
+ */
+
+const toggleAddSavePostCtrl = expressAsyncHandler(async (req, res) => {
+	//1. Find the post to be saved
+	const { postId } = req.body;
+	console.log("🚀 ~ file: postCtrl.js ~ line 288 ~ toggleAddSavePostCtrl ~ postId", postId)
+	const loginUserId = req?.user?._id.valueOf();
+	console.log("🚀 ~ file: postCtrl.js ~ line 290 ~ toggleAddSavePostCtrl ~ loginUserId", loginUserId)
+	const userHasSavedPosts= await SavedPost.find({user:loginUserId})?.populate('post')
+
+	if (userHasSavedPosts) {
+		console.log(
+			'🚀 ~ file: postCtrl.js ~ line 301 ~ toggleAddSavePostCtrl ~ savedPosts',
+			userHasSavedPosts
+		);
+		const alreadySaved = 
+
+		console.log("🚀 ~ file: postCtrl.js ~ line 299 ~ toggleAddSavePostCtrl ~ alreadySaved", alreadySaved)
+		const post = await SavedPost.findByIdAndUpdate(
+			loginUserId,
+			{
+				$pull: { post: postId },
+				isDisliked: false,
+			},
+			{ new: true }
+		);
+		res.json(post);
+	} else {
+		// add to saved List
+		const post = await SavedPost.create({
+			user: loginUserId,
+			post: postId,
+		});
+		res.json(post);
+	}
+});
+
+
+
+// //-------------report a post---------------
+const toggleReportPostCtrl = expressAsyncHandler(async (req, res) => {
+	//find the post to report
+	const { postId } = req?.body; 
+	const post = await Post.findById(postId);
+
+	//find the login user
+	const loginUserId = req?.user?._id;
+	console.log("🚀 ~ file: postCtrl.js ~ line 331 ~ toggleReportPostCtrl ~ req?.user", req?.user)
+	const reportUserId = post?.reports?.includes(loginUserId);
+	//find the user has reported this post ?
+	const isReported = post?.isReported;   
+	if (!isReported || !reportUserId) {
+		const post = await Post.findByIdAndUpdate(   
+			postId,
+			{
+				$push: { reports: loginUserId },
+				isReported: true,
+			},
+			{ new: true }
+		);
+		res.json(post);
+	} else {
+		res.json(post);
+	}
+});
+
+
+ //--------fetch reported posts---------------
+const fetchReportedPostCtrl = expressAsyncHandler(async (req, res) => {
+  try {
+    const posts = await Post.find({isReported:true }).populate('user');
+    res.json(posts);
+  } catch (error) {
+    throw new Error(error.message);
+  }
+});
+
+// -------------------save posts------------------------
+const savePostCtrl = expressAsyncHandler(async (req, res) => {
+  const { postId } = req.body;
+  const userId = req?.user?.id;
+  console.log(postId, userId, 'gfhjkl;');
+  try {
+    const savedPosts = await SavedPost.findOne({ user: userId });
+    if (savedPosts) {
+      const isExist = savedPosts.post.includes(postId);
+      if (isExist) {
+        const newSavedPosts = await SavedPost.findOneAndUpdate(
+			{ user: userId },
+			{ $pull: { post: postId } },
+			{ new: true }
+		);
+        res.json(newSavedPosts);
+      } else {
+        const newSavedPosts = await SavedPost.findOneAndUpdate(
+			{ user: userId },
+			{ $push: { post: postId } },
+			{ new: true }
+		);
+        res.json(newSavedPosts);
+      }
+    } else {
+      const newSavedPosts = await SavedPost.create({
+			user: userId,
+			post: postId,
+		});
+      res.json(newSavedPosts);
+    }
+  } catch (error) {
+    throw new Error(error.message);
+  }
+});
+
+//--------fetch saved posts---------------
+const fetchSavedPostCtrl = expressAsyncHandler(async (req, res) => {
+	try {
+		// const posts = await SavedPost.find({ user: req.user.id }, { post: 1 });
+		const posts = await SavedPost.find({ user: req.user.id }).populate(
+			'post'
+		);
+		res.json(posts);
+	} catch (error) {
+		throw new Error(error.message);
+	}
+});
+
+//------------------delete saved post---------------
+
+const deleteSavedPostController = expressAsyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.id;
+  try {
+    const posts = await SavedPost.findOneAndUpdate(
+      { user: userId },
+      {
+        $pull: { post: id },
+      },
+      { new: true }
+    );
+    res.json(posts);
+  } catch (error) {
+    throw new Error(error.message);
+  }
+});
+
+
+//-------------Block post---------------
+const blockPostController = expressAsyncHandler(async (req, res) => {
+  const { postId } = req.body;
+
+  const post = await Post.findByIdAndUpdate(
+    postId,
+    {
+      isBlocked: true,
+    },
+    {
+      new: true,
+    }
+  );
+  res.json(post);
+});
+
 module.exports = {
 	createPostCtrl,
 	fetchPostsCtrl,
@@ -276,5 +449,10 @@ module.exports = {
 	updatePostCtrl,
 	deletePost,
 	toggleAddLikeToPostCtrl,
-	toggleAddDislikeToPostCtrl,
+	toggleAddDisLikeToPostCtrl,
+	toggleAddSavePostCtrl,
+	savePostCtrl,
+	fetchSavedPostCtrl,
+	toggleReportPostCtrl,
+	fetchReportedPostCtrl,
 };

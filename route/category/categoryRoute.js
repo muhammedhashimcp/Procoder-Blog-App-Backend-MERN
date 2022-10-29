@@ -9,12 +9,27 @@ const {
 	deleteCategory
 
 } = require('../../controllers/category/categoryCtrl');
+const {
+	photoUpload,
+	categoryImageResize,
+} = require('../../middlewares/upload/photoUpload');
 
-
-categoryRoute.post("/",authMiddleware,createCategoryCtrl)
+// ,authMiddleware,
+categoryRoute.post(
+	'/',
+	authMiddleware,
+	photoUpload.single('categoryImage'),categoryImageResize,
+	createCategoryCtrl
+);
 categoryRoute.get("/", fetchCategoriesCtrl)
 categoryRoute.get("/:id",  fetchCategoryCtrl)
-categoryRoute.put("/:id", authMiddleware, updateCategoryCtrl)
+categoryRoute.put(
+	'/:id',
+	photoUpload.single('categoryImage'),
+	categoryImageResize,
+	updateCategoryCtrl
+);
+// categoryRoute.put("/:id", authMiddleware,validateCategoryImage, updateCategoryCtrl)
 categoryRoute.delete("/:id", authMiddleware, deleteCategory)
-
+ 
 module.exports = categoryRoute;

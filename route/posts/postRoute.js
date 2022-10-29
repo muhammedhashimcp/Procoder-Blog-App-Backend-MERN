@@ -19,7 +19,12 @@ const {
 	updatePostCtrl,
 	deletePost,
 	toggleAddLikeToPostCtrl,
-	toggleAddDislikeToPostCtrl,
+	toggleAddDisLikeToPostCtrl,
+	toggleAddSavePostCtrl,
+	savePostCtrl,
+	fetchSavedPostCtrl,
+	toggleReportPostCtrl,
+	fetchReportedPostCtrl,
 } = require('../../controllers/posts/postCtrl');
 // } = require("../../controllers/posts/postCtrl");
 
@@ -41,9 +46,14 @@ const {
 		);
 postRoute.get('/', fetchPostsCtrl);
 postRoute.put('/likes', authMiddleware, toggleAddLikeToPostCtrl);
-postRoute.put('/dislikes', authMiddleware, toggleAddDislikeToPostCtrl);
+postRoute.put('/toggle-save', authMiddleware, savePostCtrl);
+postRoute.put('/dislikes', authMiddleware, toggleAddDisLikeToPostCtrl);
+postRoute.get('/saved-list', authMiddleware, fetchSavedPostCtrl);
+postRoute.post('/report-post', authMiddleware, toggleReportPostCtrl);
+postRoute.get('/reported-list', authMiddleware, fetchReportedPostCtrl);
+
 postRoute.get('/:id', fetchPostCtrl);
 postRoute.put('/:id', authMiddleware, updatePostCtrl);
-postRoute.delete('/:id', authMiddleware, deletePost);
+postRoute.delete('/:id', authMiddleware, deletePost); 
 
 module.exports = postRoute;

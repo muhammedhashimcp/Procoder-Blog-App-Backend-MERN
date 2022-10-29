@@ -26,6 +26,7 @@ const {
 	photoUpload,
 	profilePhotoResize,
 	bannerImgResize,
+	profileBannerImageResize,
 } = require('../../middlewares/upload/photoUpload');
 
 
@@ -40,7 +41,7 @@ userRoutes.put(
 	'/profile-banner-photo-upload',
 	authMiddleware,
 	photoUpload.single('image'),
-	bannerImgResize,
+	profileBannerImageResize,
 	bannerPhotoUploadCtrl
 );
 userRoutes.get("/", authMiddleware, fetchUserCtrl);

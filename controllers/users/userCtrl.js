@@ -460,7 +460,7 @@ const bannerPhotoUploadCtrl = expressAsyncHandler(async (req, res) => {
 	
 	// check user blocked or not
 	// 1. Get the path to img
-	const localPath = `public/images/banner/${req.file.fileName}`;
+	const localPath = `public/images/banner/${req.file.bannerImgFileName}`;
 	// 2.Upload to cloudinary
 	const imgUploaded = await cloudinaryUploadImg(localPath);
 	//3. Find the login user
@@ -468,12 +468,12 @@ const bannerPhotoUploadCtrl = expressAsyncHandler(async (req, res) => {
 	const foundUser = await User.findByIdAndUpdate(
 		_id,
 		{
-			profilePhoto: imgUploaded?.url,
+			profileBannerPhoto: imgUploaded?.url,
 		},
 		{ new: true }
 	);
 	// Remove the saved profile photo from storage
-	fs.unlinkSync(localPath);
+	fs.unlinkSync(localPath); 
 	res.json(foundUser);
 });
 

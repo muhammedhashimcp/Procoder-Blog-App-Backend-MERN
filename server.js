@@ -11,7 +11,7 @@ const categoryRoutes=require("./route/category/categoryRoute")
 
 //middleware  imports
 const cors = require('cors');
-const morgan = require('morgan');   
+const morgan = require('morgan');    
 // combined /dev/tiny/ short/ common
 
 // middleware
